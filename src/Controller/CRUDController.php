@@ -1178,9 +1178,9 @@ class CRUDController extends Controller
     protected function isInPreviewMode()
     {
         return $this->admin->supportsPreviewMode()
-        && ($this->isPreviewRequested()
-            || $this->isPreviewApproved()
-            || $this->isPreviewDeclined());
+            && ($this->isPreviewRequested()
+                || $this->isPreviewApproved()
+                || $this->isPreviewDeclined());
     }
 
     /**
@@ -1381,6 +1381,39 @@ class CRUDController extends Controller
         return $this->get('translator')->trans($id, $parameters, $domain, $locale);
     }
 
+    protected function handleXmlHttpRequestErrorResponse(Request $request, FormInterface $form): JsonResponse
+    {
+        if (!\in_array('application/json', $request->getAcceptableContentTypes(), true)) {
+            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        $errors = [];
+        foreach ($form->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        return $this->renderJson([
+            'result' => 'error',
+            'errors' => $errors,
+        ], Response::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * @param object $object
+     */
+    protected function handleXmlHttpRequestSuccessResponse(Request $request, $object): JsonResponse
+    {
+        if (!\in_array('application/json', $request->getAcceptableContentTypes(), true)) {
+            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
+        }
+
+        return $this->renderJson([
+            'result' => 'ok',
+            'objectId' => $this->admin->getNormalizedIdentifier($object),
+            'objectName' => $this->escapeHtml($this->admin->toString($object)),
+        ], Response::HTTP_OK);
+    }
+
     private function getSelectedTab(Request $request): array
     {
         return array_filter(['_tab' => $request->request->get('_tab')]);
@@ -1415,38 +1448,5 @@ class CRUDController extends Controller
         $twig = $this->get('twig');
 
         $twig->getRuntime(FormRenderer::class)->setTheme($formView, $theme);
-    }
-
-    private function handleXmlHttpRequestErrorResponse(Request $request, FormInterface $form): JsonResponse
-    {
-        if (!\in_array('application/json', $request->getAcceptableContentTypes(), true)) {
-            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
-        }
-
-        $errors = [];
-        foreach ($form->getErrors(true) as $error) {
-            $errors[] = $error->getMessage();
-        }
-
-        return $this->renderJson([
-            'result' => 'error',
-            'errors' => $errors,
-        ], Response::HTTP_BAD_REQUEST);
-    }
-
-    /**
-     * @param object $object
-     */
-    private function handleXmlHttpRequestSuccessResponse(Request $request, $object): JsonResponse
-    {
-        if (!\in_array('application/json', $request->getAcceptableContentTypes(), true)) {
-            return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
-        }
-
-        return $this->renderJson([
-            'result' => 'ok',
-            'objectId' => $this->admin->getNormalizedIdentifier($object),
-            'objectName' => $this->escapeHtml($this->admin->toString($object)),
-        ], Response::HTTP_OK);
     }
 }

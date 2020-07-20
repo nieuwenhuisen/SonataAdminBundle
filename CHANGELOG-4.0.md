@@ -32,6 +32,8 @@ This file will get merged with CHANGELOG.md when releasing 4.0.0
 - `AbstractAdmin::configureActionButtons` method signature has changed
 - Moved default buttons from `AbstractAdmin::configureActionButtons` to `AbstractAdmin::getActionButtons`
 - `AbstractAdmin::getBatchActions` is now final
+- `CRUDController::handleXmlHttpRequestSuccessResponse` method is now protected
+- `CRUDController::handleXmlHttpRequestErrorResponse` method is now protected
 
 ### Removed
 - Removed BC handler for deprecated `view` `_action`

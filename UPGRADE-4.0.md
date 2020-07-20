@@ -74,3 +74,8 @@ Method `SimplePager::getResults` is always returning an array
 
 ## LockInterface
 `LockInterface` extends from `ModelManagerInterface`.
+
+## CRUDController
+The following methods changed their visiblity to protected:
+ * `handleXmlHttpRequestSuccessResponse`
+ * `handleXmlHttpRequestErrorResponse`
