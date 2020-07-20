@@ -1417,7 +1417,7 @@ class CRUDController extends Controller
         $twig->getRuntime(FormRenderer::class)->setTheme($formView, $theme);
     }
 
-    private function handleXmlHttpRequestErrorResponse(Request $request, FormInterface $form): JsonResponse
+    protected function handleXmlHttpRequestErrorResponse(Request $request, FormInterface $form): JsonResponse
     {
         if (!\in_array('application/json', $request->getAcceptableContentTypes(), true)) {
             return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
@@ -1437,7 +1437,7 @@ class CRUDController extends Controller
     /**
      * @param object $object
      */
-    private function handleXmlHttpRequestSuccessResponse(Request $request, $object): JsonResponse
+    protected function handleXmlHttpRequestSuccessResponse(Request $request, $object): JsonResponse
     {
         if (!\in_array('application/json', $request->getAcceptableContentTypes(), true)) {
             return $this->renderJson([], Response::HTTP_NOT_ACCEPTABLE);
